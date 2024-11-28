@@ -2,7 +2,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 40;
 canvas.width = 600;
-canvas.height = 600;
+canvas.height = 550;
 
 // Game variables
 let dogSize = 40; // Size of the dog
@@ -61,55 +61,32 @@ function moveDog() {
     const head = { x: dog[0].x + direction.x, y: dog[0].y + direction.y };
     dog.unshift(head);
 
-    document.addEventListener('keydown', (event) => {
-        console.log('Key pressed:', event.key);
-        switch (event.key) {
-            case 'ArrowUp':
-                if (direction.y === 0) direction = { x: 0, y: -gridSize };
-                break;
-            case 'ArrowDown':
-                if (direction.y === 0) direction = { x: 0, y: gridSize };
-                break;
-            case 'ArrowLeft':
-                if (direction.x === 0) direction = { x: -gridSize, y: 0 };
-                break;
-            case 'ArrowRight':
-                if (direction.x === 0) direction = { x: gridSize, y: 0 };
-                break;
-        }
-    });
-    
-    // Check if dog eats snacks
-    if (head.x === snacks.x && head.y === snacks.y) {
+    if (isSamePosition(head, snacks)) {
         score++;
+        console.log('Snack eaten!');
         snacks = spawnSnack();
     } else {
-        dog.pop();
+        dog.pop(); // Remove tail if no snack is eaten
     }
 }
 
 // Draw the snack
 function drawSnack() {
+    console.log(`Snack at: (${snacks.x}, ${snacks.y})`);
     ctx.drawImage(snackImage, snacks.x, snacks.y, snacksSize, snacksSize);
 }
+
 // Spawn snacks at random position
 function spawnSnack() {
-    const x = Math.floor((Math.random() * canvas.width) / gridSize) * gridSize;
-    const y = Math.floor((Math.random() * canvas.height) / gridSize) * gridSize;
+    const x = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
+    const y = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
     return { x, y };
-
 }
-
 
 // Check for collision
 function checkCollision() {
     const head = dog[0];
-    if (head.x === snacks.x && head.y === snacks.y) {
-        score++;
-        console.log('Snack eaten!');
-        snacks = spawnSnack();
-    }
-    
+
     // Wall collision
     if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
         return true;
@@ -123,6 +100,16 @@ function checkCollision() {
     }
 
     return false;
+}
+
+// Check if positions overlap
+function isSamePosition(pos1, pos2, size1 = dogSize, size2 = snacksSize) {
+    return (
+        pos1.x < pos2.x + size2 &&
+        pos1.x + size1 > pos2.x &&
+        pos1.y < pos2.y + size2 &&
+        pos1.y + size1 > pos2.y
+    );
 }
 
 // Change direction
@@ -149,15 +136,3 @@ dogImage.onload = () => {
         gameLoop();
     };
 };
-function drawDog() {
-    for (let i = 0; i < dog.length; i++) {
-        console.log(`Drawing dog at (${dog[i].x}, ${dog[i].y})`);
-        ctx.drawImage(dogImage, dog[i].x, dog[i].y, dogSize, dogSize);
-    }
-}
-
-function drawSnack() {
-    console.log(`Drawing snack at (${snacks.x}, ${snacks.y})`);
-    ctx.drawImage(snackImage, snacks.x, snacks.y, snacksSize, snacksSize);
-}
-
