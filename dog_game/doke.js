@@ -1,8 +1,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 50;
-canvas.width = 600;
-canvas.height = 600;
+canvas.width = 550;
+canvas.height = 550;
 
 // Game variables
 let dogSize = 80; // Størrelse på hunden, endret fra 40 til 80

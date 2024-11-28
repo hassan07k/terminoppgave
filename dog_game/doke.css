@@ -3,9 +3,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 40rem;
+    height: 100vh;
     background-color: #f4f4f4;
     font-family: Arial, sans-serif;
+    overflow: hidden;
 }
 
 .game-container {
@@ -14,12 +15,25 @@ body {
     align-items: center;
     border: 2px solid #ffcc00;
     background-color: #fff;
-    width: 600px;
-    height: 600px;
+    width: 550px;
+    height: 550px;
     position: relative;
 }
 
 canvas {
     display: block;
     background-color: #e8f5e9;
+    
+}
+.return {
+    display: flex;
+    justify-content: flex-start;
+}
+a {
+    text-decoration: none;  /* Fjerner understrekingen */
+    color: black;           
+}
+
+a:hover {
+    color: darkgray;        /* Endrer farge på lenken når du holder musepekeren over den */
 }
