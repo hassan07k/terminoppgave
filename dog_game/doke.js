@@ -1,11 +1,11 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const gridSize = 40;
+const gridSize = 50;
 canvas.width = 600;
-canvas.height = 550;
+canvas.height = 600;
 
 // Game variables
-let dogSize = 40; // Size of the dog
+let dogSize = 80; // Størrelse på hunden, endret fra 40 til 80
 let snacksSize = 30; // Size of the snacks
 let dog = [{ x: 300, y: 300 }];
 let direction = { x: 0, y: 0 };
@@ -52,7 +52,7 @@ function clearCanvas() {
 // Draw the dog
 function drawDog() {
     for (let i = 0; i < dog.length; i++) {
-        ctx.drawImage(dogImage, dog[i].x, dog[i].y, dogSize, dogSize);
+        ctx.drawImage(dogImage, dog[i].x, dog[i].y, dogSize, dogSize); // Bruk dogSize for å endre hundens størrelse
     }
 }
 

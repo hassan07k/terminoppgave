@@ -3,7 +3,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 95vh;
+    height: 40rem;
     background-color: #f4f4f4;
     font-family: Arial, sans-serif;
 }
@@ -15,7 +15,7 @@ body {
     border: 2px solid #ffcc00;
     background-color: #fff;
     width: 600px;
-    height: 550px;
+    height: 600px;
     position: relative;
 }
 

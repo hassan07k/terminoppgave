@@ -100,3 +100,11 @@ footer {
     bottom: 0;
     padding-left: 31rem;
 }
+a {
+    text-decoration: none;  /* Fjerner understrekingen */
+    color: black;           
+}
+
+a:hover {
+    color: darkgray;        /* Endrer farge på lenken når du holder musepekeren over den */
+}
