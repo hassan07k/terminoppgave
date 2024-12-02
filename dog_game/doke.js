@@ -18,6 +18,7 @@ dogImage.src = './Dog.png'; // Path to dog image
 const snackImage = new Image();
 snackImage.src = './Snack.png'; // Path to snack image
 
+
 // Main game loop
 function gameLoop() {
     setTimeout(() => {
@@ -27,13 +28,37 @@ function gameLoop() {
         drawSnack();
 
         if (checkCollision()) {
-            alert(`Game Over! Your score: ${score}`);
-            resetGame();
+            showPopup(score);
         } else {
             requestAnimationFrame(gameLoop);
         }
+        
+        
     }, 150);
 }
+
+function showPopup(score) {
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('overlay');
+    const popupScore = document.getElementById('popupScore');
+    
+    popupScore.textContent = score; // Vis poengsummen
+    popup.style.display = 'block'; // Vis popup
+    overlay.style.display = 'block'; // Vis overlay
+    
+    // Restart spillet når brukeren trykker på knappen
+    document.getElementById('restartButton').onclick = () => {
+        hidePopup();
+        resetGame();
+        gameLoop();
+    };
+}
+
+function hidePopup() {
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
+
 
 // Reset game
 function resetGame() {
@@ -42,18 +67,46 @@ function resetGame() {
     snacks = spawnSnack();
     score = 0;
 }
+// Tegn rutenett
+function drawGrid() {
+    ctx.strokeStyle = '#cccccc'; // Farge på rutene
+    ctx.lineWidth = 1; // Tykkelse på linjene
 
-// Clear canvas
-function clearCanvas() {
-    ctx.fillStyle = '#e8f5e9';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Tegn horisontale linjer
+    for (let y = 0; y <= canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+
+    // Tegn vertikale linjer
+    for (let x = 0; x <= canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
 }
 
-// Draw the dog
+// Oppdatert clearCanvas-funksjon til å inkludere rutenettet
+function clearCanvas() {
+    ctx.fillStyle = '#e8f5e9'; // Bakgrunnsfarge
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fyll bakgrunnen
+    drawGrid(); // Tegn rutenett over bakgrunnen
+}
+
+// Retning for rotasjon av hunden
+let dogDirection = 0; // 0 = høyre, 90 = ned, 180 = venstre, -90 = opp
+
+// Tegn hunden med rotasjon
 function drawDog() {
-    for (let i = 0; i < dog.length; i++) {
-        ctx.drawImage(dogImage, dog[i].x, dog[i].y, dogSize, dogSize); // Bruk dogSize for å endre hundens størrelse
-    }
+    const head = dog[0]; // Kun hodet trenger å endre retning
+    ctx.save(); // Lagre canvas-tilstanden
+    ctx.translate(head.x + dogSize / 2, head.y + dogSize / 2); // Flytt til hodets midtpunkt
+    ctx.rotate((dogDirection * Math.PI) / 180); // Roter i riktig retning
+    ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize); // Tegn hunden
+    ctx.restore(); // Gjenopprett canvas-tilstanden
 }
 
 // Move the dog
@@ -72,16 +125,22 @@ function moveDog() {
 
 // Draw the snack
 function drawSnack() {
-    console.log(`Snack at: (${snacks.x}, ${snacks.y})`);
-    ctx.drawImage(snackImage, snacks.x, snacks.y, snacksSize, snacksSize);
+    ctx.drawImage(
+        snackImage,
+        snacks.x + (gridSize - snacksSize) / 2, // Juster x-posisjon
+        snacks.y + (gridSize - snacksSize) / 2, // Juster y-posisjon
+        snacksSize,
+        snacksSize
+    );
 }
 
 // Spawn snacks at random position
 function spawnSnack() {
     const x = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
     const y = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
-    return { x, y };
+    return { x, y }; // Ingen justering trengs her, da justeringen skjer i `drawSnack()`
 }
+
 
 // Check for collision
 function checkCollision() {
@@ -112,27 +171,39 @@ function isSamePosition(pos1, pos2, size1 = dogSize, size2 = snacksSize) {
     );
 }
 
-// Change direction
+// Endre retning basert på tastetrykk
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowUp':
-            if (direction.y === 0) direction = { x: 0, y: -gridSize };
+            if (direction.y === 0) {
+                direction = { x: 0, y: -gridSize };
+                dogDirection = 90; // Opp
+            }
             break;
         case 'ArrowDown':
-            if (direction.y === 0) direction = { x: 0, y: gridSize };
+            if (direction.y === 0) {
+                direction = { x: 0, y: gridSize };
+                dogDirection = -90; // Ned
+            }
             break;
         case 'ArrowLeft':
-            if (direction.x === 0) direction = { x: -gridSize, y: 0 };
+            if (direction.x === 0) {
+                direction = { x: -gridSize, y: 0 };
+                dogDirection = 0; // Venstre
+            }
             break;
         case 'ArrowRight':
-            if (direction.x === 0) direction = { x: gridSize, y: 0 };
+            if (direction.x === 0) {
+                direction = { x: gridSize, y: 0 };
+                dogDirection = 180; // Høyre
+            }
             break;
     }
 });
-
 // Start the game
 dogImage.onload = () => {
     snackImage.onload = () => {
         gameLoop();
     };
 };
+
