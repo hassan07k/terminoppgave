@@ -85,5 +85,27 @@
         }
 
         button:hover {
-            background-color: #a0522d;
+            background-color: #381500;
         }
+        
+        .custom-button {
+            background-color: #381500; /* Button color */
+            color: white; /* Text color */
+            border: none; /* Removes default border */
+            border-radius: 5px; /* Rounds the edges */
+            padding: 10px 20px; /* Adds padding */
+            font-size: 16px; /* Adjusts font size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+        }
+        
+        .custom-button:hover {
+            background-color: #a0522d; /* Darker shade on hover */
+            transform: scale(1.05); /* Slightly enlarges the button */
+        }
+        
+        .custom-button:active {
+            background-color: #003f7f; /* Even darker when clicked */
+            transform: scale(0.98); /* Slightly shrinks when clicked */
+        }
+        
