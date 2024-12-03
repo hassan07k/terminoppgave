@@ -12,10 +12,10 @@ let snacks = spawnSnack();
 let score = 0;
 
 const dogImage = new Image();
-dogImage.src = './Dog.png'; // Path to dog image
+dogImage.src = '../static/img/dogim/Dog.png'; // Path to dog image
 
 const snackImage = new Image();
-snackImage.src = './Snack.png'; // Path to snack image
+snackImage.src = '../static/img/dogim/Snack.png'; // Path to snack image
 
 
 // Main game loop
@@ -25,7 +25,7 @@ function gameLoop() {
         moveDog();
         drawDog();
         drawSnack();
-
+        
         if (checkCollision()) {
             showPopup(score);
         } else {
