@@ -11,13 +11,13 @@ def root():
 
 
 
-@app.route('/doke_game')
+@app.route('/doke')
 def doke():
     return render_template("doke.htm")
 
-@app.route('/pizza')
-def annen2():
-    return '<h1> fuck you!</h1>'
+@app.route('/pizzaclicker')
+def pizzaClicker():
+    return render_template("pizzaclicker.htm")
 
 
 
