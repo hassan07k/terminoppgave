@@ -1,10 +1,14 @@
 body {
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+.body {
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f4f4f4;
     font-family: Arial, sans-serif;
     overflow: hidden;
 }

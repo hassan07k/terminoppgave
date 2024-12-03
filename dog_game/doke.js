@@ -7,7 +7,6 @@ canvas.height = 550;
 // Game variables
 let dogSize = 80; // Størrelse på hunden, endret fra 40 til 80
 let snacksSize = 30; // Size of the snacks
-let dog = [{ x: 300, y: 300 }];
 let direction = { x: 0, y: 0 };
 let snacks = spawnSnack();
 let score = 0;
@@ -66,6 +65,7 @@ function resetGame() {
     direction = { x: 0, y: 0 };
     snacks = spawnSnack();
     score = 0;
+    
 }
 // Tegn rutenett
 function drawGrid() {
@@ -91,7 +91,7 @@ function drawGrid() {
 
 // Oppdatert clearCanvas-funksjon til å inkludere rutenettet
 function clearCanvas() {
-    ctx.fillStyle = '#e8f5e9'; // Bakgrunnsfarge
+    ctx.fillStyle = '#e8f5e9';
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Fyll bakgrunnen
     drawGrid(); // Tegn rutenett over bakgrunnen
 }
@@ -101,45 +101,59 @@ let dogDirection = 0; // 0 = høyre, 90 = ned, 180 = venstre, -90 = opp
 
 // Tegn hunden med rotasjon
 function drawDog() {
-    const head = dog[0]; // Kun hodet trenger å endre retning
-    ctx.save(); // Lagre canvas-tilstanden
-    ctx.translate(head.x + dogSize / 2, head.y + dogSize / 2); // Flytt til hodets midtpunkt
-    ctx.rotate((dogDirection * Math.PI) / 180); // Roter i riktig retning
-    ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize); // Tegn hunden
-    ctx.restore(); // Gjenopprett canvas-tilstanden
+    for (let i = 0; i < dog.length; i++) {
+        const segment = dog[i];
+        ctx.save();
+        ctx.translate(segment.x + dogSize / 2, segment.y + dogSize / 2); // Flytt til segmentets midtpunkt
+        ctx.rotate((segment.direction * Math.PI) / 180); // Roter basert på segmentets retning
+        ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize); // Tegn segmentet
+        ctx.restore();
+    }
 }
 
 // Move the dog
-function moveDog() {
-    const head = { x: dog[0].x + direction.x, y: dog[0].y + direction.y };
-    dog.unshift(head);
+let dog = [{ 
+    x: Math.floor(canvas.width / gridSize / 2) * gridSize + gridSize / 2 - dogSize / 2, 
+    y: Math.floor(canvas.height / gridSize / 2) * gridSize + gridSize / 2 - dogSize / 2, 
+    direction: 0 
+}]; // Hver del av hunden har nå en retning
 
-    if (isSamePosition(head, snacks)) {
+function moveDog() {
+    // Kopier forrige posisjon og retning for hvert segment
+    let prevPositions = dog.map(segment => ({ x: segment.x, y: segment.y, direction: segment.direction }));
+
+    // Oppdater hodet
+    dog[0].x += direction.x;
+    dog[0].y += direction.y;
+    dog[0].direction = dogDirection;
+
+    // Oppdater kroppen
+    for (let i = 1; i < dog.length; i++) {
+        dog[i].x = prevPositions[i - 1].x;
+        dog[i].y = prevPositions[i - 1].y;
+        dog[i].direction = prevPositions[i - 1].direction;
+    }
+
+    // Hvis hodet overlapper med snacks, legg til nytt segment
+    if (isSamePosition(dog[0], snacks)) {
         score++;
-        console.log('Snack eaten!');
         snacks = spawnSnack();
-    } else {
-        dog.pop(); // Remove tail if no snack is eaten
+        dog.push({ ...prevPositions[prevPositions.length - 1] }); // Legg til nytt segment bakerst
     }
 }
 
 // Draw the snack
 function drawSnack() {
-    ctx.drawImage(
-        snackImage,
-        snacks.x + (gridSize - snacksSize) / 2, // Juster x-posisjon
-        snacks.y + (gridSize - snacksSize) / 2, // Juster y-posisjon
-        snacksSize,
-        snacksSize
-    );
+    ctx.drawImage(snackImage, snacks.x, snacks.y, snacksSize, snacksSize);
 }
 
 // Spawn snacks at random position
 function spawnSnack() {
-    const x = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
-    const y = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
-    return { x, y }; // Ingen justering trengs her, da justeringen skjer i `drawSnack()`
+    const x = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize + gridSize / 2 - snacksSize / 2;
+    const y = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize + gridSize / 2 - snacksSize / 2;
+    return { x, y }; // Snacksens posisjon er nå sentrert
 }
+
 
 
 // Check for collision
@@ -162,12 +176,10 @@ function checkCollision() {
 }
 
 // Check if positions overlap
-function isSamePosition(pos1, pos2, size1 = dogSize, size2 = snacksSize) {
+function isSamePosition(pos1, pos2) {
     return (
-        pos1.x < pos2.x + size2 &&
-        pos1.x + size1 > pos2.x &&
-        pos1.y < pos2.y + size2 &&
-        pos1.y + size1 > pos2.y
+        Math.abs(pos1.x - pos2.x) < gridSize / 2 &&
+        Math.abs(pos1.y - pos2.y) < gridSize / 2
     );
 }
 
@@ -206,4 +218,3 @@ dogImage.onload = () => {
         gameLoop();
     };
 };
-
