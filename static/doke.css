@@ -79,3 +79,20 @@ a:hover {
     background-color: rgba(0, 0, 0, 0.5); 
     z-index: 9;}
    
+    button {
+        padding: 12px 24px;
+        font-size: 18px;
+        cursor: pointer;
+        background-color: #e27426;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        margin-top: 20px;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #873d0f;
+    }
+   
+    
