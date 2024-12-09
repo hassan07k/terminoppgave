@@ -12,12 +12,17 @@ conn = sqlite3.connect("spillmeny.db")
 cursor = conn.cursor()
 
 # Create table for Doke game high scores
-cursor.execute('''
+cursor.execute("""
 CREATE TABLE IF NOT EXISTS doke_save (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Highscore INTEGER NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    score VARCHAR(255) NOT NULL
 )
-''')
+""")
+
+cursor.execute('''
+INSERT INTO doke_save(highscore)
+VALUES (?)
+''', ("0")) 
 
 # Create table for Pizza Clicker game scores
 cursor.execute("""
@@ -31,9 +36,7 @@ cursor.execute('''
 INSERT INTO pizza_save(score)
 VALUES (?)
 ''', ("0"))  # Default score of 0
-# cursor.execute('''
-#                SELECT score FROM pizza_save WHERE id=%s''', 
-#                (id))
+
 
 @app.route('/get_score', methods=['GET'])
 def get_score():
@@ -58,7 +61,57 @@ def get_score():
     except Exception as e:
         # Handle any errors
         return jsonify({"error": str(e)}), 500
+@app.route('/get_doke', methods=['GET'])
+def get_doke():
+    try:
+        # Connect to the database
+        conn = sqlite3.connect("spillmeny.db")
+        cursor = conn.cursor()
 
+        # Fetch the latest score (highest ID)
+        cursor.execute('SELECT Highscore FROM doke_save ORDER BY ID DESC LIMIT 1')
+        row = cursor.fetchone()
+
+        # Close the connection
+        conn.close()
+
+        # Return the fetched score or a default score if no records exist
+        if row:
+            score = row[0]
+            return jsonify({"Highscore": score}), 200
+        else:
+            return jsonify({"Highscore": 0}), 200
+    except Exception as e:
+        # Handle any errors
+        return jsonify({"error": str(e)}), 500
+
+# @app.route('/save_doke', methods=['POST'])
+# def save_doke():
+#     # Get the number of clicks from the request
+#     data = request.get_json()
+#     score = data.get('Highscore')
+
+#     if score is None:
+#         return jsonify({"error": "Invalid data"}), 400
+
+#     # Save to the database
+#     try:
+#         conn = sqlite3.connect("spillmeny.db")
+#         cursor = conn.cursor()
+#         cursor.execute('''
+#         INSERT INTO doke_save(Highscore)
+#         VALUES (?)
+#         ''', (score,))
+#         conn.commit()
+#         conn.close()
+#         return jsonify({"success": True}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+
+
+# # Commit changes and close connection
+# conn.commit()
+# conn.close()
 
 @app.route('/save_clicks', methods=['POST'])
 def save_clicks():

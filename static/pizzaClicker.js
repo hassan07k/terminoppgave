@@ -24,10 +24,10 @@ function saveClicks() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            saveStatus.textContent = "Saved!";
+            saveStatus.textContent = "Saved the game!";
             setTimeout(() => {
-                saveStatus.textContent = ""; // Clear the message after 2 seconds
-            }, 2000);
+                saveStatus.textContent = ""; // Clear the message after 3 seconds
+            }, 3000);
         } else {
             saveStatus.textContent = "Error saving score!";
         }
@@ -38,10 +38,10 @@ function saveClicks() {
     });
 }
 
-// Automatically save clicks every 10 seconds
+// Automatically save clicks every 30 seconds
 setInterval(() => {
     saveClicks();
-}, 10000); // 10000ms = 10 seconds
+}, 30000); // 30000ms = 30 seconds
 
 // Fetch and display the score on page load
 function displayScore() {
