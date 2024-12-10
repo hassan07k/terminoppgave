@@ -12,10 +12,13 @@ let snacks = spawnSnack();
 let score = 0;
 
 const dogImage = new Image();
-dogImage.src = '../static/img/dogim/Dog.png'; // Path to dog image
+dogImage.src = '../static/img/dogim/Dog_game.png'; // Path to dog image
 
 const snackImage = new Image();
 snackImage.src = '../static/img/dogim/Snack.png'; // Path to snack image
+
+const bodyImage = new Image();
+bodyImage.src = '../static/img/dogim/dog_back.png'; // Path to the new body image
 
 
 // Main game loop
@@ -36,31 +39,59 @@ function gameLoop() {
     }, 150);
 }
 
+// Function to save the high score to the server
+function saveHighscore(score) {
+    fetch('/save_doke', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Highscore: score }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("High score saved successfully!");
+        } else {
+            console.error("Error saving high score:", data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+// Update showPopup to save high score
 function showPopup(score) {
-    const popup = document.getElementById('popup');
+    // const popup = document.getElementById('popup');
     const overlay = document.getElementById('overlay');
     const popupScore = document.getElementById('popupScore');
-    
-    popupScore.textContent = score; // Vis poengsummen
-    popup.style.display = 'block'; // Vis popup
-    overlay.style.display = 'block'; // Vis overlay
-    
-    // Restart spillet når brukeren trykker på knappen
+
+    popupScore.textContent =  score; // Show the score
+    popupMessage.style.display = 'block'; // Show popup
+    overlay.style.display = 'block'; // Show overlay
+
+    // Save the high score
+    saveHighscore(score);
+    // Restart the game when the user clicks the restart button
     document.getElementById('restartButton').onclick = () => {
+        location.reload()
         hidePopup();
         resetGame();
         gameLoop();
     };
 }
 
+
 function hidePopup() {
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('popupMessage').style.display = 'none';
+
 }
 
 
 // Reset game
 function resetGame() {
+    
     dog = [{ x: 300, y: 300 }];
     direction = { x: 0, y: 0 };
     snacks = spawnSnack();
@@ -106,7 +137,15 @@ function drawDog() {
         ctx.save();
         ctx.translate(segment.x + dogSize / 2, segment.y + dogSize / 2); // Flytt til segmentets midtpunkt
         ctx.rotate((segment.direction * Math.PI) / 180); // Roter basert på segmentets retning
-        ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize); // Tegn segmentet
+
+        if (i === 0) {
+            // Tegn hodet
+            ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize);
+        } else {
+            // Tegn kroppen
+            ctx.drawImage(bodyImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize);
+        }
+
         ctx.restore();
     }
 }
@@ -131,13 +170,14 @@ function moveDog() {
     for (let i = 1; i < dog.length; i++) {
         dog[i].x = prevPositions[i - 1].x;
         dog[i].y = prevPositions[i - 1].y;
-        dog[i].direction = prevPositions[i - 1].direction;
+        dog[i].direction = prevPositions[i - 1].direction; // Arver retningen til segmentet foran
     }
 
     // Hvis hodet overlapper med snacks, legg til nytt segment
     if (isSamePosition(dog[0], snacks)) {
         score++;
         snacks = spawnSnack();
+        popupScore.textContent = + score;
         dog.push({ ...prevPositions[prevPositions.length - 1] }); // Legg til nytt segment bakerst
     }
 }
@@ -212,6 +252,35 @@ document.addEventListener('keydown', (event) => {
             break;
     }
 });
+
+// Fetch the current high score from the server
+function fetchHighscore() {
+    fetch('/get_doke', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.Highscore !== undefined) {
+            
+            highscoreDisplay.id = 'highscoreDisplay';
+            highscoreDisplay.textContent = `Highscore: ${data.Highscore}`;
+            document.body.insertBefore(highscoreDisplay, document.body.firstChild);
+
+        } else {
+            console.error("Error fetching high score:", data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching high score:", error);
+    });
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', fetchHighscore);
+
 // Start the game
 dogImage.onload = () => {
     snackImage.onload = () => {
