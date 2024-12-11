@@ -52,6 +52,7 @@ function saveHighscore(score) {
     .then(data => {
         if (data.success) {
             console.log("High score saved successfully!");
+            fetchHighscore(); // Fetch and update the high score after saving
         } else {
             console.error("Error saving high score:", data.error);
         }
@@ -60,6 +61,8 @@ function saveHighscore(score) {
         console.error("Error:", error);
     });
 }
+
+
 
 // Update showPopup to save high score
 function showPopup(score) {
@@ -74,8 +77,7 @@ function showPopup(score) {
     // Save the high score
     saveHighscore(score);
     // Restart the game when the user clicks the restart button
-    document.getElementById('restartButton').onclick = () => {
-        location.reload()
+    document.getElementById('restartButton').onclick = () => {  
         hidePopup();
         resetGame();
         gameLoop();
@@ -135,19 +137,15 @@ function drawDog() {
     for (let i = 0; i < dog.length; i++) {
         const segment = dog[i];
         ctx.save();
-        
-        // Move to the center of the segment for rotation
-        ctx.translate(segment.x + dogSize / 2, segment.y + dogSize / 2); 
-        
-        // Rotate based on the segment's direction
-        ctx.rotate((segment.direction * Math.PI) / 180); 
-        
+        ctx.translate(segment.x + dogSize / 2, segment.y + dogSize / 2); // Flytt til segmentets midtpunkt
+        ctx.rotate((segment.direction * Math.PI) / 180); // Roter basert på segmentets retning
+
         if (i === 0) {
-            // Draw the head
+            // Tegn hodet
             ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize);
         } else {
-            // Draw the body
-            ctx.drawImage(bodyImage, -dogSize / 2, -dogSize / 20, dogSize, dogSize);
+            // Tegn kroppen
+            ctx.drawImage(bodyImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize);
         }
 
         ctx.restore(); // Restore canvas state
@@ -156,11 +154,12 @@ function drawDog() {
 
 
 // Move the dog
-let dog = [{ 
-    x: Math.floor(canvas.width / gridSize / 2) * gridSize + gridSize / 2 - dogSize / 2, 
-    y: Math.floor(canvas.height / gridSize / 2) * gridSize + gridSize / 2 - dogSize / 2, 
-    direction: 0 
-}]; // Hver del av hunden har nå en retning
+let dog = [{
+    x: Math.floor(canvas.width / (2 * gridSize)) * gridSize + gridSize / 2 - dogSize / 2,
+    y: Math.floor(canvas.height / (2 * gridSize)) * gridSize + gridSize / 2 - dogSize / 2,
+    direction: 0
+}];
+ // Hver del av hunden har nå en retning
 
 function moveDog() {
     // Kopier forrige posisjon og retning for hvert segment
@@ -269,11 +268,14 @@ function fetchHighscore() {
     .then(response => response.json())
     .then(data => {
         if (data.Highscore !== undefined) {
-            
-            highscoreDisplay.id = 'highscoreDisplay';
+            // Ensure we update an existing element
+            let highscoreDisplay = document.getElementById('highscoreDisplay');
+            if (!highscoreDisplay) {
+                highscoreDisplay = document.createElement('div');
+                highscoreDisplay.id = 'highscoreDisplay';
+                document.body.insertBefore(highscoreDisplay, document.body.firstChild);
+            }
             highscoreDisplay.textContent = `Highscore: ${data.Highscore}`;
-            document.body.insertBefore(highscoreDisplay, document.body.firstChild);
-
         } else {
             console.error("Error fetching high score:", data.error);
         }
@@ -282,6 +284,7 @@ function fetchHighscore() {
         console.error("Error fetching high score:", error);
     });
 }
+
 
 // Call this function when the page loads
 document.addEventListener('DOMContentLoaded', fetchHighscore);

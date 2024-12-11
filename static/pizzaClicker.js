@@ -11,7 +11,7 @@ const scoreDisplay = document.getElementById('scoreDisplay');
 
 pizza.addEventListener('click', () => {
     score++;
-    scoreDisplay.textContent = "Score: " + score;
+    scoreDisplay.textContent = score;
 });
 
 // Function to save clicks to the server
