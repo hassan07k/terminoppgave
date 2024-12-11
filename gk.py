@@ -61,6 +61,7 @@ def get_score():
     except Exception as e:
         # Handle any errors
         return jsonify({"error": str(e)}), 500
+
 @app.route('/get_doke', methods=['GET'])
 def get_doke():
     try:
@@ -68,15 +69,15 @@ def get_doke():
         conn = sqlite3.connect("spillmeny.db")
         cursor = conn.cursor()
 
-        # Fetch the latest score (highest ID)
-        cursor.execute('SELECT Highscore FROM doke_save ORDER BY ID DESC LIMIT 1')
+        # Fetch the highest score from the table
+        cursor.execute('SELECT MAX(Highscore) FROM doke_save')
         row = cursor.fetchone()
 
         # Close the connection
         conn.close()
 
         # Return the fetched score or a default score if no records exist
-        if row:
+        if row and row[0] is not None:
             score = row[0]
             return jsonify({"Highscore": score}), 200
         else:
@@ -85,61 +86,36 @@ def get_doke():
         # Handle any errors
         return jsonify({"error": str(e)}), 500
 
-# @app.route('/save_doke', methods=['POST'])
-# def save_doke():
-#     # Get the number of clicks from the request
-#     data = request.get_json()
-#     score = data.get('Highscore')
-
-#     if score is None:
-#         return jsonify({"error": "Invalid data"}), 400
-
-#     # Save to the database
-#     try:
-#         conn = sqlite3.connect("spillmeny.db")
-#         cursor = conn.cursor()
-#         cursor.execute('''
-#         INSERT INTO doke_save(Highscore)
-#         VALUES (?)
-#         ''', (score,))
-#         conn.commit()
-#         conn.close()
-#         return jsonify({"success": True}), 200
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
-
-# # Commit changes and close connection
-# conn.commit()
-# conn.close()
-
-@app.route('/save_clicks', methods=['POST'])
-def save_clicks():
-    # Get the number of clicks from the request
+@app.route('/save_doke', methods=['POST'])
+def save_doke():
     data = request.get_json()
-    score = data.get('score')
+    score = data.get('Highscore')
 
     if score is None:
         return jsonify({"error": "Invalid data"}), 400
 
-    # Save to the database
     try:
-        conn = sqlite3.connect("spillmeny.db")
+        conn = sqlite3.connect("spillmeny.db", check_same_thread=False)
         cursor = conn.cursor()
-        cursor.execute('''
-        INSERT INTO pizza_save(score)
-        VALUES (?)
-        ''', (score,))
-        conn.commit()
+
+        # Get the current high score from the database
+        cursor.execute('SELECT MAX(Highscore) FROM doke_save')
+        row = cursor.fetchone()
+        current_highscore = row[0] if row[0] is not None else 0
+
+        # Save the new high score only if it's higher
+        if int(score) > int(current_highscore):
+            cursor.execute('''
+                INSERT INTO doke_save(Highscore)
+                VALUES (?)
+            ''', (score,))
+            conn.commit()
+
         conn.close()
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-# Commit changes and close connection
-conn.commit()
-conn.close()
+    
 
 
 @app.route('/home')
