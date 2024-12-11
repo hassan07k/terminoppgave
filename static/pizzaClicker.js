@@ -1,10 +1,15 @@
 let score = 0;
 
+
 // Increment score on pizza click
 const cookie = document.getElementById('pizza');
+
+// Increment score on cookie click
+const pizza = document.getElementById('pizza');
+
 const scoreDisplay = document.getElementById('scoreDisplay');
 
-cookie.addEventListener('click', () => {
+pizza.addEventListener('click', () => {
     score++;
     scoreDisplay.textContent = "Score: " + score;
 });
@@ -72,4 +77,4 @@ function displayScore() {
 }
 
 // Call this function when the page loads
-document.addEventListener('DOMContentLoaded', displayScore);
+
