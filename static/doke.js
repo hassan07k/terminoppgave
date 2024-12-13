@@ -78,9 +78,10 @@ function showPopup(score) {
     saveHighscore(score);
     // Restart the game when the user clicks the restart button
     document.getElementById('restartButton').onclick = () => {  
-        hidePopup();
         resetGame();
         gameLoop();
+        location.reload();
+        hidePopup();
     };
 }
 

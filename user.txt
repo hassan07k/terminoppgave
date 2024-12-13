@@ -1,0 +1,2 @@
+xxlendoxx1 p: lendo001
+mariadb -u xxlendoxx1 -p
