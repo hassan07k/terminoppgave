@@ -68,9 +68,8 @@ function saveHighscore(score) {
 function showPopup(score) {
     // const popup = document.getElementById('popup');
     const overlay = document.getElementById('overlay');
-    const popupScore = document.getElementById('popupScore');
+    const popupScore = document.getElementById('popupMessage');
 
-    popupScore.textContent =  score; // Show the score
     popupMessage.style.display = 'block'; // Show popup
     overlay.style.display = 'block'; // Show overlay
 
