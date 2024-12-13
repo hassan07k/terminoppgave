@@ -18,7 +18,7 @@ const snackImage = new Image();
 snackImage.src = '../static/img/dogim/Snack.png'; // Path to snack image
 
 const bodyImage = new Image();
-bodyImage.src = '../static/img/dogim/dog_back.png'; // Path to the new body image
+bodyImage.src = '../static/img/dogim/dog_back1.png'; // Path to the new body image
 
 
 // Main game loop
@@ -133,23 +133,23 @@ function clearCanvas() {
 // Retning for rotasjon av hunden
 let dogDirection = 0; // 0 = høyre, 90 = ned, 180 = venstre, -90 = opp
 
-// Tegn hunden med rotasjon
+// Draw the dog with rotation
 function drawDog() {
     for (let i = 0; i < dog.length; i++) {
         const segment = dog[i];
         ctx.save();
-        ctx.translate(segment.x + gridSize / 2, segment.y + gridSize / 2); // Center on the grid
-        ctx.rotate((segment.direction * Math.PI) / 180);
+        ctx.translate(segment.x + dogSize / 2, segment.y + dogSize / 2); // Flytt til segmentets midtpunkt
+        ctx.rotate((segment.direction * Math.PI) / 180); // Roter basert på segmentets retning
 
         if (i === 0) {
-            // Draw head
+            // Tegn hodet
             ctx.drawImage(dogImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize);
         } else {
-            // Draw body
+            // Tegn kroppen
             ctx.drawImage(bodyImage, -dogSize / 2, -dogSize / 2, dogSize, dogSize);
         }
 
-        ctx.restore();
+        ctx.restore(); // Restore canvas state
     }
 }
 
