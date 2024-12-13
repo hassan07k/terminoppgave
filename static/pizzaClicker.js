@@ -19,7 +19,7 @@ function saveClicks() {
     const saveStatus = document.getElementById('saveStatus');
     saveStatus.textContent = "Saving...";
 
-    fetch('/save_clicks', {
+    fetch('/save_pizza', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -35,12 +35,18 @@ function saveClicks() {
             }, 3000);
         } else {
             saveStatus.textContent = "Error saving score!";
+            setTimeout(() => {
+                saveStatus.textContent = "";
+            }, 3000);
         }
     })
     .catch(error => {
         console.error('Error:', error);
         saveStatus.textContent = "Error saving score!";
     });
+    setTimeout(() => {
+        saveStatus.textContent = "";
+    }, 3000);
 }
 
 // Automatically save clicks every 30 seconds
@@ -65,7 +71,7 @@ function displayScore() {
     .then(data => {
         if (data.score !== undefined) {
             // Update the score display on the page
-            document.getElementById('scoreDisplay').textContent = "Score: " + data.score;
+            document.getElementById('scoreDisplay').textContent = + data.score;
 
             // Sync the JavaScript score variable with the database value
             score = parseInt(data.score, 10);
