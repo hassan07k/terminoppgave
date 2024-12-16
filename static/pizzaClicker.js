@@ -82,5 +82,3 @@ function displayScore() {
     .catch(error => console.error('Error fetching score:', error));
 }
 
-// Call this function when the page loads
-
