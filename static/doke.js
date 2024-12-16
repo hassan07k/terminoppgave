@@ -68,8 +68,9 @@ function saveHighscore(score) {
 function showPopup(score) {
     // const popup = document.getElementById('popup');
     const overlay = document.getElementById('overlay');
-    const popupScore = document.getElementById('popupMessage');
+    const popupScore = document.getElementById('popupScore');
 
+    popupScore.textContent =  score; // Show the score
     popupMessage.style.display = 'block'; // Show popup
     overlay.style.display = 'block'; // Show overlay
 
@@ -77,10 +78,9 @@ function showPopup(score) {
     saveHighscore(score);
     // Restart the game when the user clicks the restart button
     document.getElementById('restartButton').onclick = () => {  
+        hidePopup();
         resetGame();
         gameLoop();
-        location.reload();
-        hidePopup();
     };
 }
 
