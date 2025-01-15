@@ -62,3 +62,11 @@ function displayScore() {
         })
         .catch(error => console.error('Error fetching score:', error));
 }
+
+
+
+
+function clickme() {
+
+    console.log('hello world')
+}

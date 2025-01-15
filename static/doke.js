@@ -25,10 +25,11 @@ bodyImage.src = '../static/img/dogim/dog_back55.png'; // Path to the new body im
 function gameLoop() {
     setTimeout(() => {
         clearCanvas();
+        
         moveDog();
         drawDog();
         drawSnack();
-        
+         
         if (checkCollision()) {
             showPopup(score);
         } else {

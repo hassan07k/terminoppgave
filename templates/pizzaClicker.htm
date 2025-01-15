@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizza Clicker Game</title>
     <link rel="stylesheet" href="../static/pizzaClicker.css">
 </head>
+
 <body>
     <!-- Knapp for å gå tilbake til menyen -->
     <div class="button-container">
@@ -15,19 +17,24 @@
     <!-- Tittel -->
     <h2>Pizza Clicker Game</h2>
 
+
     <!-- Viser scoren -->
     <p>Score: <span id="scoreDisplay">0</span></p>
 
     <!-- Pizza-element -->
     <img id="pizza" src="../static/img/pizzaim/pizza3.png" alt="Pizza">
 
-    <!-- Manuell lagringsknapp -->
+
+    <!-- Manual save button -->
+
     <button onclick="saveClicks()">Save Clicks</button>
 
     <!-- Feedbackmelding for lagring -->
     <p id="saveStatus"></p>
 
+    <button onclick="clickme()">click me</button>
     <!-- Lenke til JavaScript-koden -->
     <script src="../static/pizzaClicker.js"></script>
 </body>
+
 </html>
